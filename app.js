@@ -1,3 +1,12 @@
+let tg = window.Telegram.WebApp
+
+tg.expand()
+
+tg.MainButton.textColor = "#ffffff"
+tg.MainButton.color = "#2cab37"
+
+let item = ""
+
 const cardsWrp = document.querySelector('.cards-wrapper')
 const list = [
     {
@@ -25,4 +34,22 @@ list.forEach((el)=> {
     </div>
     `
     console.log(el)
+})
+
+const buyBtn = document.querySelectorAll('.card-btn')
+
+buyBtn.forEach((el, i)=> {
+    el.addEventListener('click', function() {
+        if(tg.MainButton.isVisible) {
+            tg.MainButton.hide()
+        }  else {
+            tg.MainButton.setText(`Вы выбрали музыка: ${i + 1}`)
+            item = i + 1
+            tg.MainButton.show()
+        }
+    })
+})
+
+Telegram.WebApp.onEvent("mainButtonClicked", function() {
+    tg.sendData(item)
 })
