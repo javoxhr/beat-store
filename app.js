@@ -1,13 +1,13 @@
-let tg = window.Telegram.WebApp
+let tg = window.Telegram.WebApp;
 
-tg.expand()
+tg.expand();
 
-tg.MainButton.textColor = "#ffffff"
-tg.MainButton.color = "#2cab37"
+tg.MainButton.textColor = "#ffffff";
+tg.MainButton.color = "#2cab37";
 
-let item = ""
+let item = "";
 
-const cardsWrp = document.querySelector('.cards-wrapper')
+const cardsWrp = document.querySelector('.cards-wrapper');
 const list = [
     {
         img: "./ipod.jpg",
@@ -24,32 +24,34 @@ const list = [
         title: "Музыка номер 3",
         price: 60
     }
-]
+];
 
-list.forEach((el)=> {
-    cardsWrp.innerHTML += `
-    <div class="card">
-    <span class="price-ram">${el.price + '$'}</span>
-     <button class="card-btn">Купить за ${el.price + '$'}</button>
-    </div>
-    `
-    console.log(el)
-})
+// Функция для отображения карточек товаров
+function renderCards() {
+    cardsWrp.innerHTML = list.map((el, i) => `
+        <div class="card">
+            <span class="price-ram">${el.price}$</span>
+            <button class="card-btn" data-index="${i}">Купить за ${el.price}$</button>
+        </div>
+    `).join('');
+}
 
-const buyBtn = document.querySelectorAll('.card-btn')
+renderCards();
 
-buyBtn.forEach((el, i)=> {
-    el.addEventListener('click', function() {
-        if(tg.MainButton.isVisible) {
-            tg.MainButton.hide()
-        }  else {
-            tg.MainButton.setText(`Вы выбрали музыка: ${i + 1}`)
-            item = i + 1
-            tg.MainButton.show()
-        }
-    })
-})
+cardsWrp.addEventListener('click', function(event) {
+    if (event.target.classList.contains('card-btn')) {
+        const index = event.target.dataset.index;
+        item = list[index];
+        tg.MainButton.setText(`Вы выбрали: ${item.title} за ${item.price}$`);
+        tg.MainButton.show();
+    }
+});
 
-Telegram.WebApp.onEvent("mainButtonClicked", function() {
-    tg.sendData(item)
-})
+tg.MainButton.onClick = function() {
+    tg.sendData(JSON.stringify(item)); // Отправляем данные о товаре в бот
+};
+
+// Обработка события нажатия на кнопку "Оплатить" в боте
+Telegram.WebApp.onEvent('mainButtonClicked', function() {
+    tg.sendData(JSON.stringify(item)); // Отправляем данные в бот
+});
